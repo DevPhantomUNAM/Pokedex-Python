@@ -1,4 +1,8 @@
 import toga
+import requests
+
+
+
 from const import *
 
 class PokeDex(toga.App):
@@ -12,6 +16,7 @@ class PokeDex(toga.App):
         self.data = ['Python','Ruby','Laravle']
 
         self.create_elements()
+        self.load_data()
     
     def startup(self):
         self.main_window = toga.MainWindow('main', title=self.title, size=(self.size))
@@ -29,6 +34,22 @@ class PokeDex(toga.App):
 
     def create_table(self):
         self.table = toga.Table(self.heading, data=self.data, on_select=self.select_element)
+
+    def load_data(self):
+        path = 'https://pokeapi.co/api/v2/pokemon/'
+
+        response = requests.get(path)
+        if response: 
+
+            result = response.json()
+
+            for pokemon in result['results']:
+                name = pokemon['name']
+                self.data.append(name)
+        else: 
+            print("None")
+
+        self.table.data = self.data
 
     #CALLBACKS
     def select_element(self,widget,row):

@@ -15,8 +15,11 @@ class PokeDex(toga.App):
         self.heading = ['Name']
         self.data = list()
 
+        self.offset = 0
+
         self.create_elements()
         self.load_async_data()
+        self.validate_previus_command()
     
     def startup(self):
         self.main_window = toga.MainWindow('main', title=self.title, size=(self.size))
@@ -53,7 +56,8 @@ class PokeDex(toga.App):
         thread.start()
 
     def load_data(self):
-        path = 'https://pokeapi.co/api/v2/pokemon/'
+        self.data.clear()
+        path = 'https://pokeapi.co/api/v2/pokemon?offset={}&limit=20'.format(self.offset)
 
         response = requests.get(path)
         if response: 
@@ -74,10 +78,19 @@ class PokeDex(toga.App):
             print(row.name)
 
     def next(self, widget):
-        print("next")
+        self.offset +=1
+        self.load_async_data()
+
+        self.validate_previus_command()
     
     def previus(self,widget):
-        print("Previus")
+        self.offset -=1
+        self.load_async_data()
+
+        self.validate_previus_command()
+
+    def validate_previus_command(self):
+        self.previus_command.enable = not self.offset == 0
 
 if __name__ == '__main__':
     pokedex = PokeDex('Pokedex','com.devphantom.org')

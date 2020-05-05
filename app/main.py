@@ -55,6 +55,31 @@ class PokeDex(toga.App):
         thread = threading.Thread(target=self.load_data)
         thread.start()
 
+    def load_async_pokemon(self, pokemon):
+        thread = threading.Thread(target=self.load_pokemon,args=[pokemon])
+        thread.start()
+
+    def load_pokemon(self,pokemon):
+        path = 'https://pokeapi.co/api/v2/pokemon/{}/'.format(pokemon)
+        response = requests.get(path)
+        if response: 
+
+            result = response.json()
+
+            name = result['forms'][0]['name']
+            abilities = list()
+
+            for ability in abilities:
+                name_ability = ability['ability']['name']
+                abilities.append(name_ability)
+            
+            sprite = result['sprites']['front_default']
+
+        else: 
+            print("Error al hacer petición al servidor")
+
+            
+
     def load_data(self):
         self.data.clear()
         path = 'https://pokeapi.co/api/v2/pokemon?offset={}&limit=20'.format(self.offset)
@@ -68,24 +93,30 @@ class PokeDex(toga.App):
                 name = pokemon['name']
                 self.data.append(name)
         else: 
-            print("None")
+            print("Error al hacer petición al servidor")
 
         self.table.data = self.data
 
     #CALLBACKS
     def select_element(self,widget,row):
         if row:
+            self.load_async_pokemon(row.name)
             print(row.name)
 
     def next(self, widget):
         self.offset +=1
-        self.load_async_data()
-
-        self.validate_previus_command()
+        self.handler_command(widget)    
     
     def previus(self,widget):
         self.offset -=1
+        self.handler_command(widget)
+
+    def handler_command(self,widget):
+        widget.enable = False
+
         self.load_async_data()
+
+        widget.enable = True
 
         self.validate_previus_command()
 

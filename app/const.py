@@ -8,3 +8,5 @@ ICON_DIR = os.path.join(BASE_DIR, 'icons')
 
 BULBASAUR_ICON = os.path.join(ICON_DIR, 'bulbasaur.png')
 METAPOD_ICON = os.path.join(ICON_DIR, 'metapod.png')
+
+TITLE = 'SELECT A POKEMON'
